@@ -1,8 +1,10 @@
+use crate::errors::add_recoverable_error;
 use crate::schema::hatch::{Build, BuildTarget, Hatch};
 use crate::schema::poetry::{Format, Include, Package};
 use crate::schema::pyproject::BuildSystem;
 use crate::schema::utils::SingleOrVec;
 use indexmap::IndexMap;
+use owo_colors::OwoColorize;
 use std::path::{MAIN_SEPARATOR, Path, PathBuf};
 
 type HatchTargetsIncludeAndSource = (
@@ -162,6 +164,16 @@ fn get_hatch_include(
                     // https://python-poetry.org/docs/1.8/pyproject/#include-and-exclude
                     // If there is no format specified, files are only added to sdist.
                     sdist_force_include.insert(path.clone(), path.clone());
+
+                    // Warn users that these files won't be available in wheel installations
+                    add_recoverable_error(format!(
+                        "File \"{}\" will only be included in source distributions (sdist), not in wheel distributions.\n\
+                        If this file is needed at runtime (e.g., config files, templates, data files), it will be missing when installed via pip.\n\
+                        To include it in wheels, specify the format explicitly in pyproject.toml:\n\
+                        include = [{{ path = \"{}\", format = [\"sdist\", \"wheel\"] }}]",
+                        path.bold(),
+                        path
+                    ));
                 }
                 Include::Map {
                     path,
@@ -171,6 +183,16 @@ fn get_hatch_include(
                         // https://python-poetry.org/docs/1.8/pyproject/#include-and-exclude
                         // If there is no format specified, files are only added to sdist.
                         sdist_force_include.insert(path.clone(), path.clone());
+
+                        // Warn users that these files won't be available in wheel installations
+                        add_recoverable_error(format!(
+                            "File \"{}\" will only be included in source distributions (sdist), not in wheel distributions.\n\
+                            If this file is needed at runtime (e.g., config files, templates, data files), it will be missing when installed via pip.\n\
+                            To include it in wheels, specify the format explicitly in pyproject.toml:\n\
+                            include = [{{ path = \"{}\", format = [\"sdist\", \"wheel\"] }}]",
+                            path.bold(),
+                            path
+                        ));
                     }
                     [Format::Sdist, Format::Wheel] => {
                         sdist_force_include.insert(path.clone(), path.clone());
