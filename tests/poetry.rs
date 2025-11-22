@@ -482,6 +482,18 @@ fn test_skip_lock_full() {
 
     warning: The following warnings occurred during the migration:
     warning: - Could not find dependency "non-existing-dependency" listed in "extra-with-non-existing-dependencies" extra.
+    warning: - File "include_sdist" will only be included in source distributions (sdist), not in wheel distributions.
+    If this file is needed at runtime (e.g., config files, templates, data files), it will be missing when installed via pip.
+    To include it in wheels, specify the format explicitly in pyproject.toml:
+    include = [{ path = "include_sdist", format = ["sdist", "wheel"] }]
+    warning: - File "include_sdist_2" will only be included in source distributions (sdist), not in wheel distributions.
+    If this file is needed at runtime (e.g., config files, templates, data files), it will be missing when installed via pip.
+    To include it in wheels, specify the format explicitly in pyproject.toml:
+    include = [{ path = "include_sdist_2", format = ["sdist", "wheel"] }]
+    warning: - File "include_sdist_3" will only be included in source distributions (sdist), not in wheel distributions.
+    If this file is needed at runtime (e.g., config files, templates, data files), it will be missing when installed via pip.
+    To include it in wheels, specify the format explicitly in pyproject.toml:
+    include = [{ path = "include_sdist_3", format = ["sdist", "wheel"] }]
     "#);
 
     insta::assert_snapshot!(fs::read_to_string(project_path.join("pyproject.toml")).unwrap(), @r#"
